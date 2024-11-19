@@ -9,6 +9,7 @@ sum_errs = 0
 kp = 0.005
 kd = 0.002
 ki = 0.0000045
+tau = 0.5
 
 while True:
     # Enter iterative code!
@@ -28,7 +29,7 @@ while True:
       err = 320 - cX
       HAL.setV(4)
       sum_errs += err
-      HAL.setW(1.1 * (kp * err + kd * (err - prev_err) + ki * sum_errs)) #Increased a 10% the calculated value
+      HAL.setW(1.1 * (kp * err + kd * (tau * (err - prev_err) / (1 + tau)) + ki * sum_errs))  #Augmented 10% the value. Smoothed the derivative
       prev_err = err
     
     GUI.showImage(red_mask)
