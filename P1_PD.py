@@ -6,7 +6,7 @@ import cv2
 i = 0
 prev_err = 0
 kp = 0.005
-kd = 0.005
+kd = 0.007
 
 while True:
     # Enter iterative code!
