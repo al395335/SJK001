@@ -6,6 +6,9 @@ import cv2
 i = 0
 prev_err = 0
 sum_errs = 0
+kp = 0.005
+kd = 0.002
+ki = 0.0000045
 
 while True:
     # Enter iterative code!
@@ -25,7 +28,7 @@ while True:
       err = 320 - cX
       HAL.setV(4)
       sum_errs += err
-      HAL.setW(0.005 * err + 0.005 * (err - prev_err) + 0.005 * sum_errs)
+      HAL.setW(kp * err + kd * (err - prev_err) + ki * sum_errs)
       prev_err = err
     
     GUI.showImage(red_mask)
