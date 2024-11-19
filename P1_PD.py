@@ -5,6 +5,8 @@ import cv2
 # Enter sequential code!
 i = 0
 prev_err = 0
+kp = 0.005
+kd = 0.005
 
 while True:
     # Enter iterative code!
@@ -23,7 +25,7 @@ while True:
     if cX > 0:
       err = 320 - cX
       HAL.setV(4)
-      HAL.setW(0.005 * err + 0.005 * (err - prev_err))
+      HAL.setW(kp * err + kd * (err - prev_err))
       prev_err = err
     
     GUI.showImage(red_mask)
