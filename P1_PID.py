@@ -28,7 +28,7 @@ while True:
       err = 320 - cX
       HAL.setV(4)
       sum_errs += err
-      HAL.setW(kp * err + kd * (err - prev_err) + ki * sum_errs)
+      HAL.setW(1.1 * (kp * err + kd * (err - prev_err) + ki * sum_errs)) #Increased a 10% the calculated value
       prev_err = err
     
     GUI.showImage(red_mask)
