@@ -3,7 +3,8 @@ import HAL
 import cv2
 
 # Enter sequential code!
-i = 0 
+i = 0
+kp = 0.005
 
 while True:
     # Enter iterative code!
@@ -22,7 +23,7 @@ while True:
     if cX > 0:
       err = 320 - cX
       HAL.setV(4)
-      HAL.setW(0.005 * err)
+      HAL.setW(kp * err)
     
     GUI.showImage(red_mask)
     print('%d cX: %.2f cY: %.2f' % (i, cX, cY))
