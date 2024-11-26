@@ -1,6 +1,7 @@
 import GUI
 import HAL
 import utm
+import math
 
 
 boat_n = [40, 16, 48.2]
@@ -27,11 +28,14 @@ def compute_pos(init_n, init_w, end_n, end_w):
 
 def move(x, y):
     pos = HAL.get_position()
-    while not (pos[0] == x and pos[1] == y):
+    dist = math.dist([pos[0], pos[1]], [x, y])
+    while dist > 0.1:
         HAL.set_cmd_pos(x, y, height, 0.5)
         GUI.showImage(HAL.get_frontal_image())
         GUI.showLeftImage(HAL.get_ventral_image())
         pos = HAL.get_position()
+        dist = math.dist([pos[0], pos[1]], [x, y])
+
 
 
 pos_x, pos_y = compute_pos(boat_n, boat_w, victims_n, victims_w)
