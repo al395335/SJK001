@@ -68,7 +68,7 @@ def move_circle(radius, angles, angles_pos):
     y = radius * math.sin(angles[angles_pos])
     HAL.set_cmd_pos(x, y, height, 0.5)
     angle += 1
-    return radius, angle
+    return radius, angles_pos
 
 
 
@@ -86,11 +86,11 @@ angles = np.linspace(0, 2*np.pi, 20)
 angles_pos = 0
 
 while victim_count < 5:
+    radius, angles_pos = move_circle(radius, angles, angles_pos)
     GUI.showImage(HAL.get_frontal_image())
     image = HAL.get_ventral_image()
     GUI.showLeftImage(image)
     res = treat_image(face_cascade, image)
-    radius, angle = move_circle(radius, angles, angles_pos)
 
 
 while True:
