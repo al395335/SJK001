@@ -2,6 +2,7 @@ import GUI
 import HAL
 import utm
 import math
+import cv2
 
 
 boat_n = [40, 16, 48.2]
@@ -11,6 +12,9 @@ victims_n = [40, 16, 47.23]
 victims_w = [3, 49, 1.78]
 
 height = 3
+
+radius = 1
+angle = 0
 
 
 def compute_pos(init_n, init_w, end_n, end_w):
@@ -37,10 +41,53 @@ def move(x, y):
         dist = math.dist([pos[0], pos[1]], [x, y])
 
 
+def rotate_image(image, angle):
+    if angle == 0: return image
+    height, width = image.shape[:2]
+    rot_mat = cv2.getRotationMatrix2D((width/2, height/2), angle, 0.9)
+    result = cv2.warpAffine(image, rot_mat, (width, height), flags=cv2.INTER_LINEAR)
+    return result
+
+
+def treat_image(face_cascade, image):
+    for rot in [0, 25, -25]:
+        rotated_img = rotate_image(image, rot)
+        gray_image = cv2.cvtColor(rotated_img, cv2.COLOR_BGR2GRAY)
+        face = face_cascade.detectMultiScale(
+            gray_image, scaleFactor=1.1, minNeighbors=5, minSize=(40, 40)
+        )
+        if len(face) > 0:
+            print("Found!")
+            return true
+    return False
+
+
+def move_circle(angle):
+    if angle = 360:
+        radius += 0.1
+        angle = 0
+    x = radius * math.cos(angle)
+    y = radius * math.sin(angle)
+    HAL.set_cmd_pos(x, y, height, 0.5)
+    angle += 1
+
+
+
 
 pos_x, pos_y = compute_pos(boat_n, boat_w, victims_n, victims_w)
 HAL.takeoff(height)
 move(pos_x, pos_y)
+
+
+victim_count = 0
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+
+while victim_count < 5:
+    GUI.showImage(HAL.get_frontal_image())
+    image = HAL.get_ventral_image()
+    GUI.showLeftImage(face_cascade, image)
+    move_circle(angle)
 
 
 while True:
