@@ -3,6 +3,7 @@ import HAL
 import utm
 import math
 import cv2
+import numpy as np
 
 
 boat_n = [40, 16, 48.2]
@@ -12,9 +13,6 @@ victims_n = [40, 16, 47.23]
 victims_w = [3, 49, 1.78]
 
 height = 3
-
-radius = 1
-angle = 0
 
 
 def compute_pos(init_n, init_w, end_n, end_w):
@@ -58,18 +56,19 @@ def treat_image(face_cascade, image):
         )
         if len(face) > 0:
             print("Found!")
-            return true
+            return True
     return False
 
 
-def move_circle(angle):
-    if angle = 360:
+def move_circle(radius, angles, angles_pos):
+    if angles_pos == len(angles):
         radius += 0.1
-        angle = 0
-    x = radius * math.cos(angle)
-    y = radius * math.sin(angle)
+        angles_pos = 0
+    x = radius * math.cos(angles[angles_pos])
+    y = radius * math.sin(angles[angles_pos])
     HAL.set_cmd_pos(x, y, height, 0.5)
     angle += 1
+    return radius, angle
 
 
 
@@ -82,12 +81,16 @@ move(pos_x, pos_y)
 victim_count = 0
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
+radius = 1
+angles = np.linspace(0, 2*np.pi, 20)
+angles_pos = 0
 
 while victim_count < 5:
     GUI.showImage(HAL.get_frontal_image())
     image = HAL.get_ventral_image()
-    GUI.showLeftImage(face_cascade, image)
-    move_circle(angle)
+    GUI.showLeftImage(image)
+    res = treat_image(face_cascade, image)
+    radius, angle = move_circle(radius, angles, angles_pos)
 
 
 while True:
