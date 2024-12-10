@@ -93,6 +93,10 @@ while victim_count < 5:
     image = HAL.get_ventral_image()
     GUI.showLeftImage(image)
     res = treat_image(face_cascade, image)
+    if res: victim_count += 1
+
+move(0, 0)
+HAL.land()
 
 
 while True:
