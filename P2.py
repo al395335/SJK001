@@ -4,6 +4,7 @@ import utm
 import math
 import cv2
 import numpy as np
+import time
 
 
 boat_n = [40, 16, 48.2]
@@ -62,12 +63,13 @@ def treat_image(face_cascade, image):
 
 def move_circle(radius, angles, angles_pos):
     if angles_pos == len(angles):
-        radius += 0.1
+        print("Circle complete")
+        radius += 10
         angles_pos = 0
-    x = radius * math.cos(angles[angles_pos])
+    x = -radius * math.cos(angles[angles_pos])
     y = radius * math.sin(angles[angles_pos])
-    HAL.set_cmd_pos(x, y, height, 0.5)
-    angle += 1
+    HAL.set_cmd_pos(x + pos_x, y + pos_y, height, 0.5)
+    angles_pos += 1
     return radius, angles_pos
 
 
@@ -81,12 +83,13 @@ move(pos_x, pos_y)
 victim_count = 0
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-radius = 1
-angles = np.linspace(0, 2*np.pi, 20)
+radius = 10
+angles = np.linspace(0, -2*np.pi, 700)
 angles_pos = 0
 
 while victim_count < 5:
     radius, angles_pos = move_circle(radius, angles, angles_pos)
+    time.sleep(1/10)
     GUI.showImage(HAL.get_frontal_image())
     image = HAL.get_ventral_image()
     GUI.showLeftImage(image)
