@@ -63,7 +63,6 @@ def treat_image(face_cascade, image):
 
 def move_circle(radius, angles, angles_pos):
     if angles_pos == len(angles):
-        print("Circle complete")
         radius += 10
         angles_pos = 0
     x = -radius * math.cos(angles[angles_pos])
