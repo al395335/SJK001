@@ -48,28 +48,42 @@ def rotate_image(image, angle):
     return result
 
 
-def treat_image(face_cascade, image):
-    for rot in [0, 25, -25]:
+def treat_image(face_cascade, image, faces):
+    for rot in [0, 30, 45, 60, 90, 120, 150, 180]:
         rotated_img = rotate_image(image, rot)
         gray_image = cv2.cvtColor(rotated_img, cv2.COLOR_BGR2GRAY)
         face = face_cascade.detectMultiScale(
-            gray_image, scaleFactor=1.1, minNeighbors=5, minSize=(40, 40)
+            gray_image, scaleFactor=1.05, minNeighbors=3, minSize=(40, 40)
         )
         if len(face) > 0:
-            print("Found!")
-            return True
-    return False
+            if compare_faces(face[0], faces):
+                print("Found!")
+                faces.append(face[0])
+                return faces
+            else:
+                return faces
+    return faces
 
 
-def move_circle(radius, angles, angles_pos):
+def move_circle(radius, angles, angles_pos, despl):
     if angles_pos == len(angles):
-        radius += 10
+        despl += 3
         angles_pos = 0
     x = -radius * math.cos(angles[angles_pos])
     y = radius * math.sin(angles[angles_pos])
-    HAL.set_cmd_pos(x + pos_x, y + pos_y, height, 0.5)
+    HAL.set_cmd_pos(x + pos_x + despl, y + pos_y, height, 0.5)
     angles_pos += 1
-    return radius, angles_pos
+    return radius, angles_pos, despl
+
+
+def compare_faces(face, faces):
+    (x, y, w, h) = face
+    new_face_center = (x + w // 2, y + h // 2)
+    for f in faces:
+        f_center = (f[0] + f[2] // 2, f[1] + face[3] // 2)
+        if math.dist(new_face_center, f_center) < 0.2:
+            return False
+    return True
 
 
 
@@ -82,18 +96,20 @@ move(pos_x, pos_y)
 victim_count = 0
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-radius = 10
+radius = 3
 angles = np.linspace(0, -2*np.pi, 700)
 angles_pos = 0
+despl = 0
+faces = []
 
-while victim_count < 5:
-    radius, angles_pos = move_circle(radius, angles, angles_pos)
-    time.sleep(1/10)
-    GUI.showImage(HAL.get_frontal_image())
+while len(faces) < 5:
     image = HAL.get_ventral_image()
     GUI.showLeftImage(image)
-    res = treat_image(face_cascade, image)
-    if res: victim_count += 1
+    GUI.showImage(HAL.get_frontal_image())
+    faces = treat_image(face_cascade, image, faces)
+    radius, angles_pos, despl = move_circle(radius, angles, angles_pos, despl)
+    time.sleep(1/10)
+
 
 move(0, 0)
 HAL.land()
