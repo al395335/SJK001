@@ -56,9 +56,10 @@ def treat_image(face_cascade, image, faces):
             gray_image, scaleFactor=1.05, minNeighbors=3, minSize=(40, 40)
         )
         if len(face) > 0:
-            if compare_faces(face[0], faces):
+            pos = HAL.get_position()
+            if compare_faces(pos, faces):
                 print("Found!")
-                faces.append(face[0])
+                faces.append(pos)
                 return faces
             else:
                 return faces
@@ -77,17 +78,13 @@ def move_circle(radius, angles, angles_pos, despl):
     return radius, angles_pos, despl
 
 
-# Similarity with detected faces
+# Similarity with position of faces
 def compare_faces(face, faces):
     print(face)
-    if len(face) < 4: return True
-    x1, y1, w1, h1 = detected_face
-    center1 = (x1 + w1 // 2, y1 + h1 // 2)
-    for (x2, y2, w2, h2) in faces:
-        center2 = (x2 + w2 // 2, y2 + h2 // 2)
-        dist = np.linalg.norm(np.array(center1) - np.array(center2))
+    for f in faces:
+        dist = math.dist(face, f)
         print(dist)
-        if dist < 80:
+        if dist < 5:
             return False
     return True
 
