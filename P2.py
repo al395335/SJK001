@@ -49,7 +49,7 @@ def rotate_image(image, angle):
 
 
 def treat_image(face_cascade, image, faces):
-    for rot in [0, 30, 45, 60, 90, 120, 150, 180]:
+    for rot in [0, 30, 45, 60, 90, 120, 150, 180]: # Check rotated faces
         rotated_img = rotate_image(image, rot)
         gray_image = cv2.cvtColor(rotated_img, cv2.COLOR_BGR2GRAY)
         face = face_cascade.detectMultiScale(
@@ -65,23 +65,29 @@ def treat_image(face_cascade, image, faces):
     return faces
 
 
+# Make circles moving center in x axis
 def move_circle(radius, angles, angles_pos, despl):
     if angles_pos == len(angles):
         despl += 3
         angles_pos = 0
     x = -radius * math.cos(angles[angles_pos])
     y = radius * math.sin(angles[angles_pos])
-    HAL.set_cmd_pos(x + pos_x + despl, y + pos_y, height, 0.5)
+    HAL.set_cmd_pos(x + pos_x + despl, y + pos_y, height, 0.5) 
     angles_pos += 1
     return radius, angles_pos, despl
 
 
+# Similarity with detected faces
 def compare_faces(face, faces):
-    (x, y, w, h) = face
-    new_face_center = (x + w // 2, y + h // 2)
-    for f in faces:
-        f_center = (f[0] + f[2] // 2, f[1] + face[3] // 2)
-        if math.dist(new_face_center, f_center) < 0.2:
+    print(face)
+    if len(face) < 4: return True
+    x1, y1, w1, h1 = detected_face
+    center1 = (x1 + w1 // 2, y1 + h1 // 2)
+    for (x2, y2, w2, h2) in faces:
+        center2 = (x2 + w2 // 2, y2 + h2 // 2)
+        dist = np.linalg.norm(np.array(center1) - np.array(center2))
+        print(dist)
+        if dist < 80:
             return False
     return True
 
