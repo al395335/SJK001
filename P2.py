@@ -63,6 +63,7 @@ def treat_image(face_cascade, image, faces):
                 return faces
             else:
                 return faces
+            break
     return faces
 
 
@@ -73,7 +74,7 @@ def move_circle(radius, angles, angles_pos, despl):
         angles_pos = 0
     x = -radius * math.cos(angles[angles_pos])
     y = radius * math.sin(angles[angles_pos])
-    HAL.set_cmd_pos(x + pos_x + despl, y + pos_y, height, 0.5) 
+    HAL.set_cmd_pos(x + pos_x + despl, y + pos_y + despl, height, 0.5) 
     angles_pos += 1
     return radius, angles_pos, despl
 
