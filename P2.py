@@ -85,7 +85,7 @@ def compare_faces(face, faces):
     for f in faces:
         dist = math.dist(face, f)
         #print(dist)
-        if dist < 5:
+        if dist < 4.5:
             return False
     return True
 
@@ -100,7 +100,7 @@ move(pos_x, pos_y)
 victim_count = 0
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-radius = 3
+radius = 7
 angles = np.linspace(0, -2*np.pi, 700)
 angles_pos = 0
 faces = []
