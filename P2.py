@@ -48,13 +48,13 @@ def rotate_image(image, angle):
     return result
 
 
+# Check rotated faces
 def treat_image(face_cascade, image, faces):
-    rots = np.linspace(0, 360, 36)
-    for rot in rots: # Check rotated faces
+    for rot in [0, 15, 30, 45, 60, 90, 120, 135, 150, 180]: 
         rotated_img = rotate_image(image, rot)
         gray_image = cv2.cvtColor(rotated_img, cv2.COLOR_BGR2GRAY)
         face = face_cascade.detectMultiScale(
-            gray_image, scaleFactor=1.05, minNeighbors=3, minSize=(40, 40)
+            gray_image, scaleFactor=1.05, minNeighbors=3, minSize=(30, 30)
         )
         if len(face) > 0:
             pos = HAL.get_position()
@@ -85,7 +85,7 @@ def compare_faces(face, faces):
     for f in faces:
         dist = math.dist(face, f)
         #print(dist)
-        if dist < 5:
+        if dist < 3.5:
             return False
     return True
 
