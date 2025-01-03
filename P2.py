@@ -49,7 +49,8 @@ def rotate_image(image, angle):
 
 
 def treat_image(face_cascade, image, faces):
-    for rot in [0, 30, 45, 60, 90, 120, 150, 180]: # Check rotated faces
+    rots = np.linspace(0, 360, 36)
+    for rot in rots: # Check rotated faces
         rotated_img = rotate_image(image, rot)
         gray_image = cv2.cvtColor(rotated_img, cv2.COLOR_BGR2GRAY)
         face = face_cascade.detectMultiScale(
@@ -63,28 +64,27 @@ def treat_image(face_cascade, image, faces):
                 return faces
             else:
                 return faces
-            break
     return faces
 
 
-# Make circles moving center in x axis
-def move_circle(radius, angles, angles_pos, despl):
+# Make circles increasing radius when completing a circle
+def move_circle(radius, angles, angles_pos):
     if angles_pos == len(angles):
-        despl += 3
+        radius += 4
         angles_pos = 0
     x = -radius * math.cos(angles[angles_pos])
     y = radius * math.sin(angles[angles_pos])
-    HAL.set_cmd_pos(x + pos_x + despl, y + pos_y + despl, height, 0.5) 
+    HAL.set_cmd_pos(x + pos_x, y + pos_y, height, 0.5) 
     angles_pos += 1
-    return radius, angles_pos, despl
+    return radius, angles_pos
 
 
-# Similarity with position of faces
+# Similarity with position of faces. Return True if the face has not been detected yet
 def compare_faces(face, faces):
-    print(face)
+    #print(face)
     for f in faces:
         dist = math.dist(face, f)
-        print(dist)
+        #print(dist)
         if dist < 5:
             return False
     return True
@@ -103,15 +103,14 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 radius = 3
 angles = np.linspace(0, -2*np.pi, 700)
 angles_pos = 0
-despl = 0
 faces = []
 
-while len(faces) < 5:
+while len(faces) < 6:
     image = HAL.get_ventral_image()
     GUI.showLeftImage(image)
     GUI.showImage(HAL.get_frontal_image())
     faces = treat_image(face_cascade, image, faces)
-    radius, angles_pos, despl = move_circle(radius, angles, angles_pos, despl)
+    radius, angles_pos = move_circle(radius, angles, angles_pos)
     time.sleep(1/10)
 
 
