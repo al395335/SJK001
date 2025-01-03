@@ -67,7 +67,7 @@ def treat_image(face_cascade, image, faces):
     return faces
 
 
-# Make circles increasing radius when completing a circle
+# Make circles anticlockwise increasing radius when completing a circle
 def move_circle(radius, angles, angles_pos):
     if angles_pos == len(angles):
         radius += 4
