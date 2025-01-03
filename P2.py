@@ -85,7 +85,7 @@ def compare_faces(face, faces):
     for f in faces:
         dist = math.dist(face, f)
         #print(dist)
-        if dist < 3.5:
+        if dist < 5:
             return False
     return True
 
